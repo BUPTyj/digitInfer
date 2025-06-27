@@ -1,0 +1,3 @@
+/D/JXMYJ/CLionProjects/test/cnpy/CMakeFiles/test.dir
+/D/JXMYJ/CLionProjects/test/cnpy/CMakeFiles/edit_cache.dir
+/D/JXMYJ/CLionProjects/test/cnpy/CMakeFiles/rebuild_cache.dir
