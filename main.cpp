@@ -1,4 +1,6 @@
-ï»¿// main.cpp
+// main.cpp
+#include <chrono>
+
 #include "nets.hpp"
 #include <iostream>
 static constexpr char shades[] = " .:-=+*#%@";
@@ -16,17 +18,17 @@ void ascii_show(const float* img) {
 
 int main() {
     const Net net = load_net();
-    std::cout << "æ¨¡åž‹åŠ è½½å®Œæˆï¼è¾“å…¥ç¼–å· (0-" << net.n_imgs-1
-              << "), è´Ÿæ•°é€€å‡º\n";
+    std::cout << "Ä£ÐÍ¼ÓÔØÍê³É£¡ÊäÈë±àºÅ (0-" << net.n_imgs-1
+              << "), ¸ºÊýÍË³ö\n";
     while (true) {
         int idx; std::cout << "index = "; std::cin >> idx;
         if (idx < 0) break;
-        if (idx >= static_cast<int>(net.n_imgs)){ std::cout<<"è¶…èŒƒå›´\n"; continue; }
+        if (idx >= static_cast<int>(net.n_imgs)){ std::cout<<"³¬·¶Î§\n"; continue; }
 
         const float* img = net.images[idx].data();
         const size_t pred = net.predict(img);
-        std::cout << "é¢„æµ‹ç»“æžœ: " << pred << "\n";
-        std::cout << "å®žé™…ç»“æžœ: " << net.img_type[idx] << "\n\n";
+        std::cout << "Ô¤²â½á¹û: " << pred << "\n";
+        std::cout << "Êµ¼Ê½á¹û: " << net.img_type[idx] << "\n\n";
 
         ascii_show(img);
     }

@@ -286,69 +286,69 @@ int main() {
         }
 
         using clock = std::chrono::steady_clock;
-        std::cout << "模型加载完成！输入编号 (0-" << imgs.shape[0]-1
-              << "), 负数退出" << std::endl;
-        while (true) {
-            int idx; std::cout << "index = "; std::cin >> idx;
-            if (idx < 0) break;
-            if (idx >= N){ std::cout<<"超范围\n"; continue; }
+        // std::cout << "模型加载完成！输入编号 (0-" << imgs.shape[0]-1
+        //       << "), 负数退出" << std::endl;
+        // while (true) {
+        //     int idx; std::cout << "index = "; std::cin >> idx;
+        //     if (idx < 0) break;
+        //     if (idx >= N){ std::cout<<"超范围\n"; continue; }
+        //     const auto t0 = clock::now();
+        //     const float* img_data = images[idx].data();
+        //     const size_t pred = net.predict(img_data);
+        //     const auto t1 = clock::now();
+        //     const std::chrono::duration<double, std::milli> dt = t1 - t0;
+        //     std::cout << "预测结果: " << pred << "\n";
+        //     std::cout << "实际结果: " << img_type[idx] << "\n";
+        //     std::cout << "运行时间: " << dt.count() << " ms\n\n";
+        //
+        //     ascii_show(img_data);
+        // }
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> dis(0, N - 1);
+
+        constexpr int test_count = 10000;
+        double total_time = 0.0;
+        int correct_predictions = 0;
+
+        std::cout << "开始自动基准测试，运行 " << test_count << " 次...\n";
+        std::cout << "进度: ";
+
+        for (int i = 0; i < test_count; ++i) {
+            // 显示进度
+            if (i % 100 == 0) {
+                std::cout << i << "/" << test_count << " ";
+                std::cout.flush();
+            }
+
+            // 随机选择索引
+            int idx = dis(gen);
+
+            // 测量预测时间
             const auto t0 = clock::now();
             const float* img_data = images[idx].data();
             const size_t pred = net.predict(img_data);
             const auto t1 = clock::now();
-            const std::chrono::duration<double, std::milli> dt = t1 - t0;
-            std::cout << "预测结果: " << pred << "\n";
-            std::cout << "实际结果: " << img_type[idx] << "\n";
-            std::cout << "运行时间: " << dt.count() << " ms\n\n";
 
-            ascii_show(img_data);
+            // 计算时间
+            const std::chrono::duration<double, std::milli> dt = t1 - t0;
+            total_time += dt.count();
+
+            // 统计正确率
+            if (pred == img_type[idx]) {
+                correct_predictions++;
+            }
         }
-    //     std::random_device rd;
-    //     std::mt19937 gen(rd());
-    //     std::uniform_int_distribution<int> dis(0, N - 1);
-    //
-    //     const int test_count = 1000;
-    //     double total_time = 0.0;
-    //     int correct_predictions = 0;
-    //
-    //     std::cout << "开始自动基准测试，运行 " << test_count << " 次...\n";
-    //     std::cout << "进度: ";
-    //
-    //     for (int i = 0; i < test_count; ++i) {
-    //         // 显示进度
-    //         if (i % 100 == 0) {
-    //             std::cout << i << "/" << test_count << " ";
-    //             std::cout.flush();
-    //         }
-    //
-    //         // 随机选择索引
-    //         int idx = dis(gen);
-    //
-    //         // 测量预测时间
-    //         const auto t0 = clock::now();
-    //         const float* img_data = images[idx].data();
-    //         const size_t pred = net.predict(img_data);
-    //         const auto t1 = clock::now();
-    //
-    //         // 计算时间
-    //         const std::chrono::duration<double, std::milli> dt = t1 - t0;
-    //         total_time += dt.count();
-    //
-    //         // 统计正确率
-    //         if (pred == img_type[idx]) {
-    //             correct_predictions++;
-    //         }
-    //     }
-    //
-    //     // 输出结果
-    //     std::cout << "\n\n========== 基准测试结果 ==========\n";
-    //     std::cout << "测试次数: " << test_count << "\n";
-    //     std::cout << "总运行时间: " << std::fixed << std::setprecision(3) << total_time << " ms\n";
-    //     std::cout << "平均运行时间: " << std::fixed << std::setprecision(3) << total_time / test_count << " ms\n";
-    //     std::cout << "预测正确率: " << std::fixed << std::setprecision(2) << (double)correct_predictions / test_count * 100 << "%\n";
-    //     std::cout << "吞吐量: " << std::fixed << std::setprecision(1) << test_count / (total_time / 1000.0) << " 次/秒\n";
-    //     std::cout << "================================\n\n";
-    //
+
+        // 输出结果
+        std::cout << "\n\n========== 基准测试结果 ==========\n";
+        std::cout << "测试次数: " << test_count << "\n";
+        std::cout << "总运行时间: " << std::fixed << std::setprecision(3) << total_time << " ms\n";
+        std::cout << "平均运行时间: " << std::fixed << std::setprecision(3) << total_time / test_count << " ms\n";
+        std::cout << "预测正确率: " << std::fixed << std::setprecision(2) << (double)correct_predictions / test_count * 100 << "%\n";
+        std::cout << "吞吐量: " << std::fixed << std::setprecision(1) << test_count / (total_time / 1000.0) << " 次/秒\n";
+        std::cout << "================================\n\n";
+
     } catch (const std::exception& ex) {
         std::cerr << "错误: " << ex.what() << '\n';
         return -1;
